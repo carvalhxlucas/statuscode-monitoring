@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
+
+const monitoramentos = 3
+const delay = 5
 
 func main() {
 
@@ -62,11 +66,26 @@ func iniciarMonitoramento() {
 	fmt.Scan(&urlSite)
 	fmt.Println("Iniciando monitoramento ao site...")
 
-	resp, _ := http.Get(urlSite)
+	for i := 0; i < monitoramentos; i++ {
+		fmt.Println("Testando site", i+1, ":", urlSite)
+		testaSite(urlSite)
+
+		time.Sleep(delay * time.Second)
+		fmt.Println("")
+	}
+}
+
+func testaSite(urlSite string) {
+
+	resp, err := http.Get(urlSite)
+
+	if err != nil {
+		fmt.Println("Ocorreu um erro: ", err)
+	}
 
 	if resp.StatusCode == 200 {
 		fmt.Println("Site: ", urlSite, "foi carregado com sucesso!")
 	} else {
-		fmt.Println("Site: ", urlSite, "está com problemas! StatusCode: ", resp)
+		fmt.Println("Site: ", urlSite, "está com problemas! StatusCode: ", resp.StatusCode)
 	}
 }
